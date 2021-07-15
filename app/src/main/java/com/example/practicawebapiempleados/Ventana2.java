@@ -24,27 +24,37 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Ventana2 extends AppCompatActivity {
-    private TextView apellido, numeroEmpleado, oficio, salario, comision;
+    private TextView idEmpleadov2, apellidov2,  oficiov2, salariov2, comisionv2, fechaaltav2, jefedirectov2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ventana2);
+        this.idEmpleadov2 = (TextView) findViewById(R.id.textViewEmp_detalle);
+        this.apellidov2=(TextView) findViewById(R.id.txtApellido_detalle);
+        this.oficiov2=(TextView) findViewById(R.id.textViewOficio_detalle);
+        this.salariov2=(TextView) findViewById(R.id.textViewSalario_detalle);
+        this.comisionv2=(TextView) findViewById(R.id.textViewComision_detalle);
+        this.fechaaltav2=(TextView) findViewById(R.id.textViewFechaAltav2);
+        this.jefedirectov2=(TextView) findViewById(R.id.textView2);
+
         //Recogemos los parametros enviados por el primer Activity a través del método getExtras
         Bundle bundle = getIntent().getExtras();
         String idem = bundle.getString("NUMEROEMPLEADO");
+        leerServicio(idem);
 
     }
     public void cerrarVentana(View view){
         finish();
 
     }
-    public void leerServicio() {
+    public void leerServicio(String idem) {
         try {
-            String url = "https://webapiempleado.azurewebsites.net/api/empleados";
-            new MainActivity.HttpAsyncTask().execute(url);
+            String urlbase = "https://webapiempleado.azurewebsites.net/api/empleados";
+            String url= urlbase+ "idem";
+            new Ventana2.HttpAsyncTask().execute(url);
         } catch (Exception e) {
-// manage exceptions
+         // manage exceptions
             System.out.println(e.toString());
         }
     }
@@ -104,10 +114,18 @@ public class Ventana2 extends AppCompatActivity {
                 JSONArray jsonarray = new JSONArray(result);
                 List<Empleados> lista = convertirJsonPlantillas(jsonarray);
 
-
-
-                /*String datos = "";
+                String datos = "";
                 for (Empleados d : lista) {
+                    idEmpleadov2.setText(d.getIdEmpleado());
+                    apellidov2.setText(d.getApellido());
+                    oficiov2.setText(d.getOficio());
+                    salariov2.setText(d.getSalario());
+                    comisionv2.setText(d.getComision());
+                    fechaaltav2.setText(d.getFechaAlta());
+                    jefedirectov2.setText(d.getJefeDirecto());
+                }
+                    /*
+                    d.getApellido();
                     datos += d.toString() + "\n";
                 }
                 //txtdatos.setText(datos); */
