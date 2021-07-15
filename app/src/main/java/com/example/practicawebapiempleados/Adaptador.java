@@ -33,24 +33,26 @@ public class Adaptador  extends RecyclerView.Adapter<Adaptador.ViewHolder>{
 
         holder.txtapellido.setOnClickListener(new View.OnClickListener(){
             @Override
-                    public void onClick(View v){
-                posicionseleccionada=position;
+                    public void onClick(View v) {
+                posicionseleccionada = position;
+
+
+
+                if (posicionseleccionada == position) {
+                    holder.txtapellido.setTextColor(Color.RED);
+
+
+                } else {
+                    holder.txtapellido.setTextColor(Color.DKGRAY);
+                }
                 notifyDataSetChanged();
                 //Notificamos cambios para que el contenedr se entere y refresque los datos
+                Intent i = new Intent(holder.itemView.getContext(), Ventana2.class);
+
+                i.putExtra("NUMEROEMPLEADO", listaEmpleados.get(position).getIdEmpleado());
+                holder.itemView.getContext().startActivity(i);
             }
         });
-        if(posicionseleccionada ==position){
-            holder.txtapellido.setTextColor(Color.RED);
-
-            Intent i = new Intent(holder.itemView.getContext(), Ventana2.class);
-
-            i.putExtra("NUMEROEMPLEADO", listaEmpleados.get(position).getIdEmpleado());
-            holder.itemView.getContext().startActivity(i);
-
-        } else{
-            holder.txtapellido.setTextColor(Color.DKGRAY);
-        }
-
     }
 
     @Override

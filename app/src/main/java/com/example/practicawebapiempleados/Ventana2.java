@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -15,6 +16,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -25,7 +27,7 @@ import java.util.List;
 
 public class Ventana2 extends AppCompatActivity {
     private TextView idEmpleadov2, apellidov2,  oficiov2, salariov2, comisionv2, fechaaltav2, jefedirectov2;
-
+    private static final String TAG= "Ventana2";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -41,6 +43,7 @@ public class Ventana2 extends AppCompatActivity {
         //Recogemos los parametros enviados por el primer Activity a través del método getExtras
         Bundle bundle = getIntent().getExtras();
         String idem = bundle.getString("NUMEROEMPLEADO");
+        Log.i(TAG, "onCreate, identificador empleado :"+idem );
         leerServicio(idem);
 
     }
@@ -50,15 +53,57 @@ public class Ventana2 extends AppCompatActivity {
     }
     public void leerServicio(String idem) {
         try {
-            String urlbase = "https://webapiempleado.azurewebsites.net/api/empleados";
-            String url= urlbase+ "idem";
+            String urlbase = "https://webapiempleado.azurewebsites.net/api/empleados/";
+            String url= urlbase+ idem;
+            Log.i(TAG, "onCreate se generó la siguiente url: "+url );
             new Ventana2.HttpAsyncTask().execute(url);
         } catch (Exception e) {
          // manage exceptions
             System.out.println(e.toString());
+            System.out.println("error en leerServicio ");
         }
     }
 
+    private class HttpAsyncTask extends AsyncTask<String, Void, String> {
+        @Override
+        protected String doInBackground(String... urls) {
+
+            return recuperarContenido(urls[0]);
+        }
+
+        // onPostExecute displays the results of the AsyncTask.
+        @Override
+        protected void onPostExecute(String result) {
+            Toast.makeText(getBaseContext(), "Datos recibidos!", Toast.LENGTH_LONG).show();
+
+            try {
+                JSONObject objetojson = new JSONObject(result);
+                Empleados empleado = new Empleados();
+                 empleado = convertirJsonObjectPlantillas(objetojson);
+
+
+                    idEmpleadov2.setText(empleado.getIdEmpleado());
+                    Toast.makeText(getBaseContext(), empleado.getIdEmpleado(), Toast.LENGTH_SHORT).show();
+                    apellidov2.setText(empleado.getApellido());
+                    oficiov2.setText(empleado.getOficio());
+                    salariov2.setText(empleado.getSalario());
+                    comisionv2.setText(empleado.getComision());
+                    fechaaltav2.setText(empleado.getFechaAlta());
+                    jefedirectov2.setText(empleado.getJefeDirecto());
+
+                    /*
+                    d.getApellido();
+                    datos += d.toString() + "\n";
+                }
+                //txtdatos.setText(datos); */
+            } catch (JSONException e) {
+                System.out.println(e.toString());
+                System.out.println(("onPostExecute"));
+                // txtdatos.setText(e.getMessage());
+            }
+
+        }
+    }
     public String recuperarContenido(String url) {
         HttpClient httpclient = new DefaultHttpClient();
         String resultado = null;
@@ -75,6 +120,7 @@ public class Ventana2 extends AppCompatActivity {
             }
         } catch (Exception e) {
             System.out.println(e.toString());
+            System.out.println(("recuperarContenido"));
         } finally {
             try {
                 if (stream != null) {
@@ -85,6 +131,7 @@ public class Ventana2 extends AppCompatActivity {
                 System.out.println(e.toString());
             }
         }
+        System.out.println("Se capturó lo siguiente " + resultado);
         return resultado;
     }
 
@@ -97,73 +144,28 @@ public class Ventana2 extends AppCompatActivity {
         inputStream.close();
         return resultado;
     }
+    public Empleados convertirJsonObjectPlantillas(JSONObject jsonObject) throws JSONException{
+        Empleados emp = new Empleados();
+        String idEmp,apel,ofi,sal, dept,comi,fecha, jefed ;
 
-    private class HttpAsyncTask extends AsyncTask<String, Void, String> {
-        @Override
-        protected String doInBackground(String... urls) {
+        idEmp = jsonObject.optString("idEmpleado").toString();
+        apel = jsonObject.optString("apellido").toString();
+        ofi = jsonObject.optString("oficio").toString();
+        sal = jsonObject.optString("salario").toString();
+        dept = jsonObject.optString("departamentoNo").toString();
+        comi = jsonObject.optString("comision").toString();
+        fecha = jsonObject.optString("fechaAlta").toString();
+        jefed = jsonObject.optString("jefeDirecto").toString();
+        emp.setIdEmpleado(idEmp);
+        emp.setApellido(apel);
+        emp.setOficio(ofi);
+        emp.setSalario(sal);
+        emp.setDepartamento(dept);
+        emp.setComision(comi);
+        emp.setFechaAlta(fecha);
+        emp.setJefeDirecto(jefed);
 
-            return recuperarContenido(urls[0]);
-        }
-
-        // onPostExecute displays the results of the AsyncTask.
-        @Override
-        protected void onPostExecute(String result) {
-            Toast.makeText(getBaseContext(), "Datos recibidos!", Toast.LENGTH_LONG).show();
-
-            try {
-                JSONArray jsonarray = new JSONArray(result);
-                List<Empleados> lista = convertirJsonPlantillas(jsonarray);
-
-                String datos = "";
-                for (Empleados d : lista) {
-                    idEmpleadov2.setText(d.getIdEmpleado());
-                    apellidov2.setText(d.getApellido());
-                    oficiov2.setText(d.getOficio());
-                    salariov2.setText(d.getSalario());
-                    comisionv2.setText(d.getComision());
-                    fechaaltav2.setText(d.getFechaAlta());
-                    jefedirectov2.setText(d.getJefeDirecto());
-                }
-                    /*
-                    d.getApellido();
-                    datos += d.toString() + "\n";
-                }
-                //txtdatos.setText(datos); */
-            } catch (JSONException e) {
-                System.out.println(e.toString());
-                // txtdatos.setText(e.getMessage());
-            }
-
-        }
-    }
-
-    public List<Empleados> convertirJsonPlantillas(JSONArray jsonarray) throws JSONException {
-        List<Empleados> lista = new ArrayList<>();
-        for (int i = 0; i < jsonarray.length(); i++) {
-            Empleados emp = new Empleados();
-            String idEmp,apel,ofi,sal, dept,comi,fecha, jefed ;
-
-
-            idEmp = jsonarray.getJSONObject(i).optString("idEmpleado").toString();
-            apel = jsonarray.getJSONObject(i).optString("apellido").toString();
-            ofi = jsonarray.getJSONObject(i).optString("oficio").toString();
-            sal = jsonarray.getJSONObject(i).optString("salario").toString();
-            dept = jsonarray.getJSONObject(i).optString("departamentoNo").toString();
-            comi = jsonarray.getJSONObject(i).optString("comision").toString();
-            fecha = jsonarray.getJSONObject(i).optString("fechaAlta").toString();
-            jefed = jsonarray.getJSONObject(i).optString("jefeDirecto").toString();
-
-            emp.setIdEmpleado(idEmp);
-            emp.setApellido(apel);
-            emp.setOficio((ofi));
-            emp.setSalario(sal);
-            emp.setDepartamento(dept);
-            emp.setComision(comi);
-            emp.setFechaAlta(fecha);
-            emp.setJefeDirecto(jefed);
-            lista.add(emp);
-        }
-        return lista;
+        return emp;
     }
 
 }

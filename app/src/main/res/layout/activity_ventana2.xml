@@ -11,43 +11,43 @@
         android:id="@+id/txtApellido_detalle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="TextView" />
+        android:text="pensando" />
 
     <TextView
         android:id="@+id/textViewEmp_detalle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="TextView" />
+        android:text="pensando" />
 
     <TextView
         android:id="@+id/textViewOficio_detalle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="TextView" />
+        android:text="pensando" />
 
     <TextView
         android:id="@+id/textViewSalario_detalle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="TextView" />
+        android:text="pensando" />
 
     <TextView
         android:id="@+id/textViewComision_detalle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="TextView" />
+        android:text="pensando" />
 
     <TextView
         android:id="@+id/textViewFechaAltav2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="TextView" />
+        android:text="pensando" />
 
     <TextView
         android:id="@+id/textView2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="TextView" />
+        android:text="pensando" />
 
     <Button
         android:id="@+id/btnvolver"
